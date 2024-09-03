@@ -28,7 +28,7 @@ rule report_markers:
         mem_mb=3800,
         slurm_partition="spotshort",
     shell:
-        "bcftools query -l '%ID\\n' {input.vcf} > {output.tsv}"
+        "bcftools query -f '%ID\\n' {input.vcf} > {output.tsv}"
 
 
 rule select_downsampled_markers:
