@@ -25,6 +25,7 @@ The following configuration settings can be adjusted in `config/config.yaml`:
 |`manifest`|path to workflow manifest; should probably remain the default `config/manifest.tsv`|
 |`reference-fasta`|path to the reference genome fasta file. can be a local path, an https:// URL, or an s3:// path|
 |`downsampled-variant-count`|how many high frequency, high call rate variants to downsample from the input vcfs. according to VerifyBamID2 documentation, should be at least 5000|
+|`dataset-name`|name to prefix output files with|
 
 In the manifest, by default at `config/manifest.tsv`, provide paths to vcf files containing variant calls for this reference genome.
 As with the reference fasta, these can be local paths, https:// URLs, or s3:// paths. For the moment, these are expected to be

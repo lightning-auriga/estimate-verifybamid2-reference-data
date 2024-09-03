@@ -8,8 +8,11 @@ properties:
   downsampled-variant-count:
     type: integer
     min: 5000
+  dataset-name:
+    type: string
 required:
   - manifest
   - reference-fasta
   - downsampled-variant-count
+  - dataset-name
 additionalProperties: no
