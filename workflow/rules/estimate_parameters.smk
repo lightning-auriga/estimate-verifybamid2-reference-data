@@ -5,9 +5,10 @@ rule estimate_verify_parameters:
         fasta="results/reference_genome/reference.fasta",
         fai="results/reference_genome/reference.fasta.fai",
     output:
-        "results/combine_vcfs/analysis-ready.UD",
-        "results/combine_vcfs/analysis-ready.mu",
-        "results/combine_vcfs/analysis-ready.bed",
+        "results/combine_vcfs/analysis-ready.vcf.gz.UD",
+        "results/combine_vcfs/analysis-ready.vcf.gz.mu",
+        "results/combine_vcfs/analysis-ready.vcf.gz.bed",
+        "results/combine_vcfs/analysis-ready.vcf.gz.V",
     conda:
         "../envs/verifybamid2.yaml"
     threads: 1

@@ -13,7 +13,7 @@ manifest["filename"] = [pathlib.Path(x).name.rstrip(".vcf.gz") for x in manifest
 manifest = manifest.set_index("filename", drop=True)
 validate(manifest, "../schema/manifest_schema.yaml")
 
-TARGETS = expand("results/combine_vcfs/analysis-ready.{suffix}", suffix=["UD", "mu", "bed"])
+TARGETS = expand("results/combine_vcfs/analysis-ready.vcf.gz.{suffix}", suffix=["UD", "mu", "bed"])
 
 
 rule all:
