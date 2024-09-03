@@ -4,6 +4,7 @@ properties:
   vcf:
     type: string
     description: path to vcf containing variants calls
+    pattern: "^.*\\.vcf\\.gz$"
 required:
   - vcf
 additionalProperties: no

@@ -3,6 +3,13 @@ description: global configuration
 properties:
   manifest:
     type: string
+  reference-fasta:
+    type: string
+  downsampled-variant-count:
+    type: integer
+    min: 5000
 required:
   - manifest
+  - reference-fasta
+  - downsampled-variant-count
 additionalProperties: no

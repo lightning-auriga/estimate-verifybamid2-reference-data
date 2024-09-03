@@ -1,4 +1,5 @@
 import pandas as pd
+import pathlib
 from snakemake.utils import validate
 
 
@@ -8,11 +9,18 @@ configfile: "config/config.yaml"
 validate(config, "../schema/global_config_schema.yaml")
 
 manifest = pd.read_table(config["manifest"], sep="\t")
+manifest["filename"] = [pathlib.Path(x).name.rstrip(".vcf.gz") for x in manifest["vcf"]]
+manifest = manifest.set_index("filename", drop=True)
 validate(manifest, "../schema/manifest_schema.yaml")
 
-TARGETS = []
+TARGETS = expand("results/combine_vcfs/analysis-ready.{suffix}", suffix=["UD", "mu", "bed"])
 
 
 rule all:
     input:
         TARGETS,
+
+
+include: "rules/acquire_data.smk"
+include: "rules/prepare_vcfs.smk"
+include: "rules/estimate_parameters.smk"
