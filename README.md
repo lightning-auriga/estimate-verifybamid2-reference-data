@@ -1,7 +1,7 @@
-# 54gene workflow: Estimate VerifyBamID2 Reference Data
+# Workflow: Estimate VerifyBamID2 Reference Data
 
-This is the template for a new Snakemake workflow. Replace this text with a comprehensive description covering the purpose and domain.
-Insert your code into the respective folders, i.e. `scripts`, `rules`, and `envs`. Define the entry point of the workflow in the `Snakefile` and the main configuration in the `config.yaml` file.
+This Snakemake workflow estimates parameter files for a new genome build for [VerifyBamID2](https://github.com/Griffan/VerifyBamID).
+It requires a reference genome fasta and one or more variant call files, anticipated to be from the 1000 Genomes Project.
 
 ## Authors
 
@@ -9,24 +9,33 @@ Insert your code into the respective folders, i.e. `scripts`, `rules`, and `envs
 
 ## Usage
 
-If you use this workflow in a paper, don't forget to give credits to the authors by citing the URL of this (original) repository and, if available, its DOI (see above).
-
 ### Step 1: Obtain a copy of this workflow
 
 1. Clone this repository to your local system, into the place where you want to perform the data analysis.
 ```
-    git clone ______
+    git clone git@github.com:lightning-auriga/estimate-verifybamid2-reference-data
 ```
 
 ### Step 2: Configure workflow
 
-Configure the workflow according to your needs via editing the files in the `config/` folder. Adjust `config.yaml` to configure the workflow execution, and `manifest.tsv` to specify your sample setup.
+The following configuration settings can be adjusted in `config/config.yaml`:
+
+|Setting|Description|
+|---|---|
+|`manifest`|path to workflow manifest; should probably remain the default `config/manifest.tsv`|
+|`reference-fasta`|path to the reference genome fasta file. can be a local path, an https:// URL, or an s3:// path|
+|`downsampled-variant-count`|how many high frequency, high call rate variants to downsample from the input vcfs. according to VerifyBamID2 documentation, should be at least 5000|
+
+In the manifest, by default at `config/manifest.tsv`, provide paths to vcf files containing variant calls for this reference genome.
+As with the reference fasta, these can be local paths, https:// URLs, or s3:// paths. For the moment, these are expected to be
+one vcf per chromosome for a combined set of 1000 Genomes Project autosome calls. Note that the files should currently be sorted
+in order of chromosome number; this restriction will be relaxed when I'm less lazy.
 
 ### Step 3: Install Snakemake
 
-Install Snakemake using [conda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html):
+Install Snakemake using [mamba](https://mamba.readthedocs.io/en/latest/installation/mamba-installation.html):
 
-    conda create -c bioconda -c conda-forge -n snakemake snakemake
+    mamba create -c bioconda -c conda-forge -n snakemake snakemake
 
 For installation details, see the [instructions in the Snakemake documentation](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html).
 
@@ -34,7 +43,7 @@ For installation details, see the [instructions in the Snakemake documentation](
 
 Activate the conda environment:
 
-    conda activate snakemake
+    mamba activate snakemake
 
 Test your configuration by performing a dry-run via
 
@@ -46,41 +55,12 @@ Execute the workflow locally via
 
 using `$N` cores or run it in a cluster environment via
 
-    snakemake --use-conda --cluster qsub --jobs 100
+    snakemake --use-conda --profile /path/to/cluster/profile --jobs 100
 
 See the [Snakemake documentation](https://snakemake.readthedocs.io/en/stable/executable.html) for further details.
 
 ### Step 5: Investigate results
 
-### Step 6: Commit changes
-
-Whenever you change something, don't forget to commit the changes back to your github copy of the repository:
-
-    git commit -a
-    git push
-
-### Step 7: Obtain updates from upstream
-
-Whenever you want to synchronize your workflow copy with new developments from upstream, do the following.
-
-1. Once, register the upstream repository in your local copy: `git remote add -f upstream git@github.com:snakemake-workflows/estimate-verifybamid2-reference-data.git` or `git remote add -f upstream https://github.com/snakemake-workflows/estimate-verifybamid2-reference-data.git` if you do not have setup ssh keys.
-2. Update the upstream version: `git fetch upstream`.
-3. Create a diff with the current version: `git diff HEAD upstream/master workflow > upstream-changes.diff`.
-4. Investigate the changes: `vim upstream-changes.diff`.
-5. Apply the modified diff via: `git apply upstream-changes.diff`.
-6. Carefully check whether you need to update the config files: `git diff HEAD upstream/master config`. If so, do it manually, and only where necessary, since you would otherwise likely overwrite your settings and samples.
-
-
-### Step 8: Contribute back
-
-In case you have also changed or added steps, please consider contributing them back to the original repository:
-
-1. [Fork](https://help.github.com/en/articles/fork-a-repo) the original repo to a personal or lab account.
-2. [Clone](https://help.github.com/en/articles/cloning-a-repository) the fork to your local system, to a different place than where you ran your analysis.
-3. Copy the modified files from your analysis to the clone of your fork, e.g., `cp -r workflow path/to/fork`. Make sure to **not** accidentally copy config file contents or sample sheets. Instead, manually update the example config files if necessary.
-4. Commit and push your changes to your fork.
-5. Create a [pull request](https://help.github.com/en/articles/creating-a-pull-request) against the original repository.
-
-## Testing
-
-Test cases are in the subfolder `tests`. They are automatically executed via continuous integration (TBD).
+The results files will, temporarily, be in the directory `results/combine_vcfs/`, due to silly restrictions in naming
+from VerifyBamID2. I'll update these to be less ridiculous moving forward. Your guess is as good as mine what the
+files `*.UD`, `*.mu`, and `*.bed` contain.
