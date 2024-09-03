@@ -12,7 +12,7 @@ rule estimate_verify_parameters:
         "../envs/verifybamid2.yaml"
     threads: 1
     resources:
-        mem_mb=3800,
-        slurm_partition="spotshort",
+        mem_mb=16000,
+        slurm_partition="comp",
     shell:
-        "VerifyBamID --RefVCF {input.vcf} --Reference {input.fasta}"
+        "verifybamid2 --RefVCF {input.vcf} --Reference {input.fasta}"
