@@ -1,0 +1,7 @@
+name: estimate-verifybamid2-reference-data
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - snakemake

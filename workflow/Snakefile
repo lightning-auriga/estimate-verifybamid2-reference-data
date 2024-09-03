@@ -1,0 +1,18 @@
+import pandas as pd
+from snakemake.utils import validate
+
+
+configfile: "config/config.yaml"
+
+
+validate(config, "../schema/global_config_schema.yaml")
+
+manifest = pd.read_table(config["manifest"], sep="\t")
+validate(manifest, "../schema/manifest_schema.yaml")
+
+TARGETS = []
+
+
+rule all:
+    input:
+        TARGETS,
