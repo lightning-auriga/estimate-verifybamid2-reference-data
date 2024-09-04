@@ -13,7 +13,7 @@ It requires a reference genome fasta and one or more variant call files, anticip
 
 1. Clone this repository to your local system, into the place where you want to perform the data analysis.
 ```
-    git clone git@github.com:lightning-auriga/estimate-verifybamid2-reference-data
+    git clone git@github.com:lightning-auriga/estimate-verifybamid2-reference-data.git
 ```
 
 ### Step 2: Configure workflow
@@ -30,13 +30,33 @@ The following configuration settings can be adjusted in `config/config.yaml`:
 In the manifest, by default at `config/manifest.tsv`, provide paths to vcf files containing variant calls for this reference genome.
 As with the reference fasta, these can be local paths, https:// URLs, or s3:// paths. For the moment, these are expected to be
 one vcf per chromosome for a combined set of 1000 Genomes Project autosome calls. Note that the files should currently be sorted
-in order of chromosome number; this restriction will be relaxed when I'm less lazy.
+in order of chromosome number and further sorted by physical position within chromosome. This is a restriction of
+[bcftools concat](https://samtools.github.io/bcftools/bcftools.html#concat), and while annoying, it is easily obtained from
+existing 1000 Genomes callsets by simply organizing the vcfs within the manifest in chromosome order. If this poses some sort
+of problem for any future issue, please go ahead and open an issue, and additional sort operations can be patched in.
+
+For cluster submission of jobs, additional tool-specific resource specifications are exposed in `config/config_resources.yaml`.
+The default settings for this workflow are configured based on a Slurm scheduler on an virtual on-demand HPC using
+[AWS ParallelCluster](https://docs.aws.amazon.com/parallelcluster/latest/ug/what-is-aws-parallelcluster.html). At the time of writing,
+all tasks except for the parameter estimation with VerifyBamID2 itself can run on a single threaded t3.medium node with 4G RAM;
+run on a spot fleet, these tasks are very affordable. The Verify run itself requires additional RAM, and is currently configured to run
+on a c7i.8xlarge node; a smaller node would certainly be functional as well.
+
+The most intensive aspect of this workflow is really disk space, when downloading the full vcfs from e.g. the 1000 Genomes Project.
+The workflow is confirmed to run on an FSx for Lustre drive with 1.2T of available space (the minimum possible request for such a partition).
+The combined cost for this workflow on the above-configured EC2 resources is approximately $5.00 USD.
+
+Note that resource configuration is specified for a slurm job scheduler using a slurm cluster profile. The resources are specified
+as the `slurm_partition` parameter in per-rule resource configuration. If you are interested in running this workflow with a profile
+for a different scheduler, you can either adapt the profile to recognize the `slurm_partition` parameter, or edit `slurm_partition` to
+whatever parameter (e.g. `queue`) your profile is expecting. For the latter case, the command `sed -i 's/slurm_partition/queue/' workflow/rules/*smk`
+will do the trick.
 
 ### Step 3: Install Snakemake
 
 Install Snakemake using [mamba](https://mamba.readthedocs.io/en/latest/installation/mamba-installation.html):
 
-    mamba create -c bioconda -c conda-forge -n snakemake snakemake
+    mamba create -c conda-forge -c bioconda -n snakemake snakemake
 
 For installation details, see the [instructions in the Snakemake documentation](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html).
 
@@ -62,6 +82,12 @@ See the [Snakemake documentation](https://snakemake.readthedocs.io/en/stable/exe
 
 ### Step 5: Investigate results
 
-The results files will, temporarily, be in the directory `results/combine_vcfs/`, due to silly restrictions in naming
-from VerifyBamID2. I'll update these to be less ridiculous moving forward. Your guess is as good as mine what the
-files `*.UD`, `*.mu`, and `*.bed` contain.
+The output VerifyBamID2 SVD estimate files are emitted to `results/verify_output` with the prefix specified
+by the user in `config["dataset-name"]`. The relevant file extensions are `*.UD`, `*.V`, `*.mu`, and `*.bed`;
+see [the VerifyBamID2 GitHub page](https://github.com/Griffan/VerifyBamID) for more documentation.
+
+After the pipeline runs to completion, executing `snakemake -j1 --use-conda -p benchmark_report` will create an html
+in `results/performance_benchmarks/performance_benchmarks.html`, describing per-job runtime performance.
+The statistics reported are unfamiliar to many;
+see [this remarkably helpful thread](https://stackoverflow.com/questions/46813371/meaning-of-the-benchmark-variables-in-snakemake)
+for more documentation if interested. This report is only interesting if the user wishes to try to optimize task performance.
