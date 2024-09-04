@@ -6,7 +6,7 @@ partitions:
 
 default:
   threads: 1
-  memory: 2000
+  memory: 3800
   partition: "small"
 
 bcftools:
