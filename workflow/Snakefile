@@ -29,6 +29,7 @@ TARGETS = expand(
     prefix=config["dataset-name"],
     suffix=["UD", "mu", "bed", "V"],
 )
+TARGETS.append("results/performance_benchmarks/performance_benchmarks.html")
 
 
 rule all:
@@ -39,3 +40,4 @@ rule all:
 include: "rules/acquire_data.smk"
 include: "rules/prepare_vcfs.smk"
 include: "rules/estimate_parameters.smk"
+include: "rules/performance_benchmarks.smk"
