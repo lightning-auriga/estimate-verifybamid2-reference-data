@@ -1,4 +1,4 @@
 manifest: "config/manifest.tsv"
 reference-fasta: "https://s3-us-west-2.amazonaws.com/human-pangenomics/T2T/CHM13/assemblies/analysis_set/chm13v2.0.fa.gz"
 downsampled-variant-count: 50000
-dataset-name: t2t_xy
+dataset-name: 1000g.phase3.unrelated.50k.chm13v2.0
