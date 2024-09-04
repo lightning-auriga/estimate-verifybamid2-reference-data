@@ -4,6 +4,8 @@ rule annotate_and_shrink:
         tbi="results/input_data/{filename}.vcf.gz.tbi",
     output:
         vcf="results/annotate_and_shrink/{filename}.vcf.gz",
+    benchmark:
+        "results/performance_benchmarks/annotate_and_shrink/{filename}.tsv"
     conda:
         "../envs/bcftools.yaml"
     threads: config_resources["bcftools"]["threads"]
@@ -23,6 +25,8 @@ rule report_markers:
         tbi="results/annotate_and_shrink/{filename}.vcf.gz.tbi",
     output:
         tsv="results/report_markers/{filename}.tsv",
+    benchmark:
+        "results/performance_benchmarks/report_markers/{filename}.tsv"
     conda:
         "../envs/bcftools.yaml"
     threads: config_resources["default"]["threads"]
@@ -40,6 +44,8 @@ rule select_downsampled_markers:
         expand("results/report_markers/{filename}.tsv", filename=manifest.index),
     output:
         "results/select_downsampled_markers/target_variants.tsv",
+    benchmark:
+        "results/performance_benchmarks/select_downsampled_markers/results.tsv"
     params:
         variant_count=config["downsampled-variant-count"],
     threads: config_resources["default"]["threads"]
@@ -59,6 +65,8 @@ rule subset_vcf:
         targets="results/select_downsampled_markers/target_variants.tsv",
     output:
         vcf="results/subset_vcf/{filename}.vcf.gz",
+    benchmark:
+        "results/performance_benchmarks/subset_vcf/{filename}.tsv"
     conda:
         "../envs/bcftools.yaml"
     threads: config_resources["default"]["threads"]
@@ -76,6 +84,8 @@ rule combine_vcfs:
         expand("results/subset_vcf/{filename}.vcf.gz", filename=manifest.index),
     output:
         "results/combine_vcfs/analysis-ready.vcf.gz",
+    benchmark:
+        "results/performance_benchmarks/combine_vcfs/results.tsv"
     conda:
         "../envs/bcftools.yaml"
     threads: config_resources["bcftools"]["threads"]

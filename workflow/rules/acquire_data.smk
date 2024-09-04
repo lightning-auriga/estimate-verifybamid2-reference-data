@@ -15,6 +15,8 @@ rule download_reference_data:
     output:
         step1=temp("results/reference_genome/reference.fasta.staging"),
         step2="results/reference_genome/reference.fasta",
+    benchmark:
+        "results/performance_benchmarks/download_reference_data/results.tsv"
     params:
         genome=config["reference-fasta"],
     conda:
@@ -38,6 +40,8 @@ rule index_fasta:
         "{prefix}.fasta",
     output:
         "{prefix}.fasta.fai",
+    benchmark:
+        "results/performance_benchmarks/index_fasta/{prefix}.tsv"
     conda:
         "../envs/samtools.yaml"
     threads: config_resources["default"]["threads"]
@@ -53,6 +57,8 @@ rule index_fasta:
 rule download_input_vcf:
     output:
         temp("results/input_data/{filename}.vcf.gz"),
+    benchmark:
+        "results/performance_benchmarks/download_input_vcf/{filename}.tsv"
     params:
         target=lambda wildcards: manifest.loc[wildcards.filename, "vcf"],
     conda:
@@ -77,6 +83,8 @@ rule index_vcf:
         "{prefix}.vcf.gz",
     output:
         "{prefix}.vcf.gz.tbi",
+    benchmark:
+        "results/performance_benchmarks/index_vcf/{prefix}.tsv"
     conda:
         "../envs/bcftools.yaml"
     threads: config_resources["default"]["threads"]

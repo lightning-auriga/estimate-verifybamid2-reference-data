@@ -9,6 +9,8 @@ rule estimate_verify_parameters:
         mu=temp("results/combine_vcfs/analysis-ready.vcf.gz.mu"),
         bed=temp("results/combine_vcfs/analysis-ready.vcf.gz.bed"),
         v=temp("results/combine_vcfs/analysis-ready.vcf.gz.V"),
+    benchmark:
+        "results/performance_benchmarks/estimate_verify_parameters/results.tsv"
     conda:
         "../envs/verifybamid2.yaml"
     threads: config_resources["verifybamid2"]["threads"]
