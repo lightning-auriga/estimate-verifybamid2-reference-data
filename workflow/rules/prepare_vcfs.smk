@@ -6,10 +6,12 @@ rule annotate_and_shrink:
         vcf="results/annotate_and_shrink/{filename}.vcf.gz",
     conda:
         "../envs/bcftools.yaml"
-    threads: 1
+    threads: config_resources["bcftools"]["threads"]
     resources:
-        mem_mb=3800,
-        slurm_partition="spotshort",
+        mem_mb=config_resources["bcftools"]["memory"],
+        slurm_partition=rc.select_partition(
+            config_resources["bcftools"]["partition"], config_resources["partitions"]
+        ),
     shell:
         "bcftools annotate --threads {threads} --set-id '%CHROM:%POS:%REF:%FIRST_ALT' -x ^FORMAT/GT -Ou {input.vcf} | "
         "bcftools view --threads {threads} -M2 -q 0.05 -v snps -f 'PASS,' -Oz -o {output}"
@@ -23,10 +25,12 @@ rule report_markers:
         tsv="results/report_markers/{filename}.tsv",
     conda:
         "../envs/bcftools.yaml"
-    threads: 1
+    threads: config_resources["default"]["threads"]
     resources:
-        mem_mb=3800,
-        slurm_partition="spotshort",
+        mem_mb=config_resources["default"]["memory"],
+        slurm_partition=rc.select_partition(
+            config_resources["default"]["partition"], config_resources["partitions"]
+        ),
     shell:
         "bcftools query -f '%ID\\n' {input.vcf} > {output.tsv}"
 
@@ -38,10 +42,12 @@ rule select_downsampled_markers:
         "results/select_downsampled_markers/target_variants.tsv",
     params:
         variant_count=config["downsampled-variant-count"],
-    threads: 1
+    threads: config_resources["default"]["threads"]
     resources:
-        mem_mb=3800,
-        slurm_partition="spotshort",
+        mem_mb=config_resources["default"]["memory"],
+        slurm_partition=rc.select_partition(
+            config_resources["default"]["partition"], config_resources["partitions"]
+        ),
     shell:
         "cat {input} | shuf -n {params.variant_count} -o {output}"
 
@@ -55,10 +61,12 @@ rule subset_vcf:
         vcf="results/subset_vcf/{filename}.vcf.gz",
     conda:
         "../envs/bcftools.yaml"
-    threads: 1
+    threads: config_resources["default"]["threads"]
     resources:
-        mem_mb=3800,
-        slurm_partition="spotshort",
+        mem_mb=config_resources["default"]["memory"],
+        slurm_partition=rc.select_partition(
+            config_resources["default"]["partition"], config_resources["partitions"]
+        ),
     shell:
         "bcftools view -i 'ID=@{input.targets}' -Oz -o {output.vcf} {input.vcf}"
 
@@ -70,9 +78,11 @@ rule combine_vcfs:
         "results/combine_vcfs/analysis-ready.vcf.gz",
     conda:
         "../envs/bcftools.yaml"
-    threads: 1
+    threads: config_resources["bcftools"]["threads"]
     resources:
-        mem_mb=3800,
-        slurm_partition="spotshort",
+        mem_mb=config_resources["bcftools"]["memory"],
+        slurm_partition=rc.select_partition(
+            config_resources["bcftools"]["partition"], config_resources["partitions"]
+        ),
     shell:
         "bcftools concat --threads {threads} --naive -Oz -o {output} {input}"

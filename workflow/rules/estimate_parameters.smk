@@ -11,10 +11,12 @@ rule estimate_verify_parameters:
         v=temp("results/combine_vcfs/analysis-ready.vcf.gz.V"),
     conda:
         "../envs/verifybamid2.yaml"
-    threads: 1
+    threads: config_resources["verifybamid2"]["threads"]
     resources:
-        mem_mb=16000,
-        slurm_partition="comp",
+        mem_mb=config_resources["verifybamid2"]["memory"],
+        slurm_partition=rc.select_partition(
+            config_resources["verifybamid2"]["partition"], config_resources["partitions"]
+        ),
     shell:
         "verifybamid2 --RefVCF {input.vcf} --Reference {input.fasta}"
 

@@ -19,10 +19,12 @@ rule download_reference_data:
         genome=config["reference-fasta"],
     conda:
         "../envs/awscli.yaml"
-    threads: 1
+    threads: config_resources["default"]["threads"]
     resources:
-        mem_mb=3800,
-        slurm_partition="spotshort",
+        mem_mb=config_resources["default"]["memory"],
+        slurm_partition=rc.select_partition(
+            config_resources["default"]["partition"], config_resources["partitions"]
+        ),
     shell:
         'if [[ "{params}" == "s3://"* ]] ; then aws s3 cp {params} {output.step1} ; '
         'elif [[ "{params}" == "http://"* ]] || [[ "{params}" == "https://"* ]] || [[ "{params}" == "ftp://"* ]] ; then wget -O {output.step1} {params} ; '
@@ -38,10 +40,12 @@ rule index_fasta:
         "{prefix}.fasta.fai",
     conda:
         "../envs/samtools.yaml"
-    threads: 1
+    threads: config_resources["default"]["threads"]
     resources:
-        mem_mb=3800,
-        slurm_partition="spotshort",
+        mem_mb=config_resources["default"]["memory"],
+        slurm_partition=rc.select_partition(
+            config_resources["default"]["partition"], config_resources["partitions"]
+        ),
     shell:
         "samtools faidx {input}"
 
@@ -53,10 +57,12 @@ rule download_input_vcf:
         target=lambda wildcards: manifest.loc[wildcards.filename, "vcf"],
     conda:
         "../envs/awscli.yaml"
-    threads: 1
+    threads: config_resources["default"]["threads"]
     resources:
-        mem_mb=3800,
-        slurm_partition="spotshort",
+        mem_mb=config_resources["default"]["memory"],
+        slurm_partition=rc.select_partition(
+            config_resources["default"]["partition"], config_resources["partitions"]
+        ),
     shell:
         'if [[ "{params}" == "s3://"* ]] ; then aws s3 cp {params} {output} ; '
         'elif [[ "{params}" == "http://"* ]] || [[ "{params}" == "https://"* ]] || [[ "{params}" == "ftp://"* ]] ; then wget -O {output} {params} ; '
@@ -73,9 +79,11 @@ rule index_vcf:
         "{prefix}.vcf.gz.tbi",
     conda:
         "../envs/bcftools.yaml"
-    threads: 1
+    threads: config_resources["default"]["threads"]
     resources:
-        mem_mb=3800,
-        slurm_partition="spotshort",
+        mem_mb=config_resources["default"]["memory"],
+        slurm_partition=rc.select_partition(
+            config_resources["default"]["partition"], config_resources["partitions"]
+        ),
     shell:
         "tabix -p vcf {input}"
