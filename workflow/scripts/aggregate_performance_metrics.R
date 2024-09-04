@@ -79,11 +79,9 @@ aggregate.performance.metrics <- function(parent.dir, rule) {
 walltime.plot <- function(benchmark.df, rule.name) {
   benchmark.df$rule.name <- rule.name
   benchmark.df$s <- benchmark.df$s / 3600
-  max.y <- max(benchmark.df$s) * 1.2
   my.plot <- ggplot(aes(x = rule.name, y = s), data = benchmark.df)
   my.plot <- my.plot + my.theme + geom_point(position = "jitter")
   my.plot <- my.plot + xlab("") + ylab("Walltime, in hours")
-  my.plot <- my.plot + scale_y_continuous(limits = c(0, max.y))
   my.plot
 }
 
@@ -159,11 +157,9 @@ io.plot <- function(benchmark.df) {
     )
   )
   plot.data$x <- factor(plot.data$x, levels = io.types)
-  max.y <- max(plot.data$y) * 1.2
   my.plot <- ggplot(aes(x = x, y = y), data = plot.data)
   my.plot <- my.plot + my.theme + geom_point(position = "jitter")
   my.plot <- my.plot + xlab("") + ylab("Data Transferred, in MB")
-  my.plot <- my.plot + scale_y_continuous(limits = c(0, max.y))
   my.plot
 }
 

@@ -29,12 +29,16 @@ TARGETS = expand(
     prefix=config["dataset-name"],
     suffix=["UD", "mu", "bed", "V"],
 )
-TARGETS.append("results/performance_benchmarks/performance_benchmarks.html")
 
 
 rule all:
     input:
         TARGETS,
+
+
+rule benchmark_report:
+    input:
+        "results/performance_benchmarks/performance_benchmarks.html",
 
 
 include: "rules/acquire_data.smk"

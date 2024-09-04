@@ -38,6 +38,8 @@ rule copy_verify_files:
         mu="results/verify_output/" + config["dataset-name"] + ".mu",
         bed="results/verify_output/" + config["dataset-name"] + ".bed",
         v="results/verify_output/" + config["dataset-name"] + ".V",
+    benchmark:
+        "results/performance_benchmarks/copy_verify_files/results.tsv"
     threads: 1
     shell:
         "cp {input.ud} {output.ud} && "
