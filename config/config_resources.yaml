@@ -1,0 +1,25 @@
+partitions:
+  small:
+    - "spotshort"
+  large:
+    - "comp"
+
+default:
+  threads: 1
+  memory: 2000
+  partition: "small"
+
+bcftools-singlethreaded:
+  threads: 1
+  memory: 2000
+  partition: "small"
+
+bcftools-multithreaded:
+  threads: 1
+  memory: 3800
+  partition: "small"
+
+verifybamid2:
+  threads: 1
+  memory: 16000
+  partition: "large"

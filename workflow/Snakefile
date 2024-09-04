@@ -1,6 +1,13 @@
 import pandas as pd
 import pathlib
 from snakemake.utils import validate
+import yaml
+
+sys.path.insert(0, ".")
+from lib import resource_calculator as rc
+
+shell.executable("/bin/bash")
+shell.prefix("set -euo pipefail; ")
 
 
 configfile: "config/config.yaml"
@@ -12,6 +19,10 @@ manifest = pd.read_table(config["manifest"], sep="\t")
 manifest["filename"] = [pathlib.Path(x).name.rstrip(".vcf.gz") for x in manifest["vcf"]]
 manifest = manifest.set_index("filename", drop=True)
 validate(manifest, "../schema/manifest_schema.yaml")
+
+with open("config/config_resources.yaml", "r") as f:
+    config_resources = yaml.safe_load(f)
+validate(config_resources, "../schema/resources_config_schema.yaml")
 
 TARGETS = expand(
     "results/verify_output/{prefix}.{suffix}",
