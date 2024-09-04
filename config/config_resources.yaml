@@ -9,12 +9,7 @@ default:
   memory: 2000
   partition: "small"
 
-bcftools-singlethreaded:
-  threads: 1
-  memory: 2000
-  partition: "small"
-
-bcftools-multithreaded:
+bcftools:
   threads: 1
   memory: 3800
   partition: "small"

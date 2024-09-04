@@ -23,15 +23,12 @@ properties:
       - memory
       - partition
     additionalProperties: false
-  bcftools-singlethreaded:
-    <<: *defaults
-  bcftools-multithreaded:
+  bcftools:
     <<: *defaults
   verifybamid2:
     <<: *defaults
 required:
   - partitions
-  - bcftools-singlethreaded
-  - bcftools-multithreaded
+  - bcftools
   - verifybamid2
 additionalProperties: false
